@@ -1,2 +1,4 @@
-package reflection.api;public class InvestigateClass {
+package reflection.api;
+
+public class InvestigateClass {
 }
