@@ -9,6 +9,7 @@ import java.util.Set;
 public class InvestigateClass implements Investigator {
 
     private Class clazz;
+    private Object anInstanceOfSomething;
     public void load(Object anInstanceOfSomething)
     {
         clazz = anInstanceOfSomething.getClass();
@@ -124,19 +125,31 @@ public class InvestigateClass implements Investigator {
     }
 
     /**
-     * creates a new instance of the given class, using a specific constructor,
-     * to be determined by the number of given arguments.
-     * No worries: there will be no ambiguity, i.e. two constructors that gets in 2 arguments each one of them...
-     * This method should act as a standalone and without any side effects, that is, the newly created
-     * instance SHOULD NOT replace the original given instance.
-     * @param //numberOfArgs number of arguments that a specific constructor has. can be 0.
-     * @param args arguments to pass to the constructor
+     /**
+     * invokes a method that returns an int value, on the given instance.
+     * the method to invoke will be given by its name only.
+     * You can assume that there is exactly one such method and that
+     * the method is declared on the instance itself and not as part of its inheritance chain
      *
-     * @return the newly created instance
+     * @param methodName the name of the method to invoke
+     * @param args the arguments to pass to the method, if such exists.
+     *             Note: You should not use the arguments in order to extract and identify the method.
+     *                   You can do that only (and simply) by its name.
+     *                   You just need to pass the arguments AS IS to the method invocation...
+     *
+     * @return the result returned from the method invocation
      */
     @Override
     public int invokeMethodThatReturnsInt(String methodName, Object... args) {
-        return 0;
+        int result=0;
+        try{
+            Method func = clazz.getDeclaredMethod(methodName, new Class[]{});
+            result = (int)func.invoke(anInstanceOfSomething,args);
+        }
+        catch(Exception e){}
+
+
+        return result;
     }
 
     @Override
