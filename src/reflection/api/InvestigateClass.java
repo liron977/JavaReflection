@@ -1,17 +1,16 @@
 package reflection.api;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
+import java.util.HashSet;
 import java.util.Set;
 
 public class InvestigateClass implements Investigator {
 
-    private Class clazz;
-    private Object anInstanceOfSomething;
+   public Class clazz;
+    private Object ObjectanInstanceOfSomething;
     public void load(Object anInstanceOfSomething)
     {
+        ObjectanInstanceOfSomething=anInstanceOfSomething;
         clazz = anInstanceOfSomething.getClass();
     }
     public int getTotalNumberOfMethods()
@@ -21,7 +20,7 @@ public class InvestigateClass implements Investigator {
     }
     public int getTotalNumberOfConstructors()
     {
-        Constructor[] allConstructors =clazz.getConstructors();
+        Constructor[] allConstructors =clazz.getDeclaredConstructors();
         return  allConstructors.length;
     }
     public int getTotalNumberOfFields()
@@ -29,29 +28,18 @@ public class InvestigateClass implements Investigator {
         Field[] allFields=clazz.getDeclaredFields();
         return allFields.length;
     }
-
     @Override
-     public Set<String> getAllImplementedInterfaces() {
-        return null;
-    }
-
-    /**
-     * returns the names of all the interfaces that this class implements
-     * (and NOT the ones that are being implemented by it's ancestor in the inheritance chain)
-     * Note that by name I mean simple, short Name that is only the interface name,
-     * and not its fully qualified name including the package it is located within...
-     *
-     * @return set of interfaces names
-     */
-/*    Set<String> getAllImplementedInterfaces()
+     public Set<String> getAllImplementedInterfaces()
     {
+        Set<String> set = new HashSet<String>();
         Class[] interfaces = clazz.getInterfaces();
         for(int i=0;i<interfaces.length;i++)
         {
-            return interfaces[i].getSimpleName();
+           set.add(interfaces[i].getSimpleName());
         }
+        return set;
 
-    }*/
+    }
     public int getCountOfConstantFields() {
         int countOfConstantFields=0;
         Field[] allFields = clazz.getDeclaredFields();
@@ -73,13 +61,7 @@ public class InvestigateClass implements Investigator {
         }
         return  countOfStaticMethods;
     }
-
     @Override
-    /**
-     * checks if the given class extends a super class, that is not Object (which all extend by default, implicitly)
-     *
-     * @return true if the class extends, false otherwise
-     */
     public boolean isExtending() {
       if(clazz.getSuperclass().equals(Object.class)||(clazz.equals(Object.class)))
       {
@@ -88,27 +70,16 @@ public class InvestigateClass implements Investigator {
 
         return true;
     }
-    /**
-     * get the name of the direct parent class
-     * the name of the class is the short, simple name and not the fully qualified name
-     *
-     * @return the name of the parent class. null if this class doesn't extend other class
-     */
     @Override
     public String getParentClassSimpleName() {
-        if(this.isExtending()) {
+        if (this.isExtending()) {
             return clazz.getSuperclass().getSimpleName();
         }
         return null;
     }
-    /**
-     * checks if the given class parent is of type abstract
-     *
-     * @return true if the parent class is abstract, false otherwise (also in case the given class does not extends any other class)
-     */
     @Override
     public boolean isParentClassAbstract() {
-        if(this.isExtending())
+        if(!this.isExtending())
         {
             return false;
         }
@@ -119,62 +90,93 @@ public class InvestigateClass implements Investigator {
         return false;
     }
 
-    @Override
-    public Set<String> getNamesOfAllFieldsIncludingInheritanceChain() {
-        return null;
-    }
 
     /**
-     /**
-     * invokes a method that returns an int value, on the given instance.
-     * the method to invoke will be given by its name only.
-     * You can assume that there is exactly one such method and that
-     * the method is declared on the instance itself and not as part of its inheritance chain
+     * get all the names of all fields, including the ones coming from the inheritance chain
+     * all fields of any type should exists: private, public, protected, static etc.
      *
-     * @param methodName the name of the method to invoke
-     * @param args the arguments to pass to the method, if such exists.
-     *             Note: You should not use the arguments in order to extract and identify the method.
-     *                   You can do that only (and simply) by its name.
-     *                   You just need to pass the arguments AS IS to the method invocation...
-     *
-     * @return the result returned from the method invocation
+     * @return set of fields names
      */
+    @Override
+    public Set<String> getNamesOfAllFieldsIncludingInheritanceChain() {
+        Set<String> set=new HashSet<String>();
+        Field[] allFields;
+        Class tmpClazz= clazz;
+        while (tmpClazz != null)
+        {
+            allFields=tmpClazz.getDeclaredFields();
+            for (int i=0;i<allFields.length;i++)
+            {
+                set.add(allFields[i].getName());
+            }
+           tmpClazz=tmpClazz.getSuperclass();
+        }
+        return set;
+    }
     @Override
     public int invokeMethodThatReturnsInt(String methodName, Object... args) {
         int result=0;
-        try{
-            Method func = clazz.getDeclaredMethod(methodName, new Class[]{});
-            result = (int)func.invoke(anInstanceOfSomething,args);
+        Method[]  allMethods=clazz.getDeclaredMethods();
+        for(int i=0;i<allMethods.length;i++)
+        {
+            if (allMethods[i].getName().equals(methodName))
+            {
+                try {
+                    result = (int) allMethods[i].invoke(ObjectanInstanceOfSomething, args);
+                    break;
+                }
+                   catch(Exception e) {}
+            }
         }
-        catch(Exception e){}
-
-
         return result;
     }
-
     @Override
-    public Object createInstance(int numberOfArgs, Object... args) {
-        return null;
-    }
+    public Object createInstance(int numberOfArgs, Object... args)
+    {
+        Constructor[] allConstructors =clazz.getDeclaredConstructors();
+        Object newObject=null;
+        for(int i=0;i<allConstructors.length;i++)
+        {
+            if(allConstructors[i].getParameterCount()==numberOfArgs)
+            {
+                try {
+                    newObject=allConstructors[i].newInstance(args);
+                    break;
+                }
+                catch (Exception e) {}
 
+            }
+        }
+        return newObject;
+    }
     @Override
     public Object elevateMethodAndInvoke(String name, Class<?>[] parametersTypes, Object... args) {
-        return null;
-    }
+        Object resultOfInvocation=null;
+        try {
+            Method method = clazz.getDeclaredMethod(name,parametersTypes);
+            method.setAccessible(true);
+            resultOfInvocation=method.invoke(ObjectanInstanceOfSomething,args);
+        }
+        catch (Exception e){}
 
+        return resultOfInvocation;
+    }
     @Override
     public String getInheritanceChain(String delimiter) {
-        return null;
+        String strResult="";
+       Class tmpClazz= clazz;
+        while (tmpClazz != null)
+        {
+            strResult= tmpClazz.getSimpleName()+strResult;
+           if(!(tmpClazz.equals(Object.class)))
+           {
+               strResult= delimiter+strResult;
+           }
+           tmpClazz=tmpClazz.getSuperclass();
+        }
+
+        return strResult;
+
     }
-    /**
-     * checks if the given class extends a super class, that is not Object (which all extend by default, implicitly)
-     *
-     * @return true if the class extends, false otherwise
-     */
- /*   boolean isExtending()
-    {
-
-    }*/
-
 
 }
