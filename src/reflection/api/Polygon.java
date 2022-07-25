@@ -4,7 +4,7 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Polygon {
+abstract public class Polygon {
 
   private Set<Point> points;
     private final int SCALE = 2;

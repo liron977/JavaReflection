@@ -2,7 +2,7 @@ package reflection.api;
 
 import java.io.Serializable;
 
-public class Rectangle extends Polygon implements Comparable, Serializable {
+ public class Rectangle extends Polygon implements Comparable, Serializable {
 
     protected int x;
     public int y;

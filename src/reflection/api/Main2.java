@@ -19,13 +19,13 @@ public class Main2 {
         System.out.println(TEST.isParentClassAbstract());
         System.out.println(TEST.getInheritanceChain("<<"));
         System.out.println(TEST.invokeMethodThatReturnsInt("twice",21)+"invokeMethodThatReturnsInt");
-        System.out.println(TEST.createInstance(3,1,2,3));
+        System.out.println(TEST.createInstance(45,1,2,3) +"createInstance");
         System.out.println(TEST.getAllImplementedInterfaces()+" getAllImplementedInterfaces");
+
+      //  int res=(int)TEST.elevateMethodAndInvoke("twice",new Class<?>[]{int.class},12);
+        System.out.println(TEST.elevateMethodAndInvoke("twice",new Class<?>[]{int.class},12));
         System.out.println(TEST.getNamesOfAllFieldsIncludingInheritanceChain()+" getNamesOfAllFieldsIncludingInheritanceChain");
 
-        Class<Integer>[] parametersTypes = new Class[0];
-        int res=(int)TEST.elevateMethodAndInvoke("twice",new Class<?>[]{int.class},2);
-        System.out.println(res);
 
 
     }

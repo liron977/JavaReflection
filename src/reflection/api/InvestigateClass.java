@@ -5,13 +5,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class InvestigateClass implements Investigator {
-
    public Class clazz;
     private Object ObjectanInstanceOfSomething;
     public void load(Object anInstanceOfSomething)
     {
-        ObjectanInstanceOfSomething=anInstanceOfSomething;
         clazz = anInstanceOfSomething.getClass();
+        ObjectanInstanceOfSomething=anInstanceOfSomething;
     }
     public int getTotalNumberOfMethods()
     {
@@ -33,9 +32,8 @@ public class InvestigateClass implements Investigator {
     {
         Set<String> set = new HashSet<String>();
         Class[] interfaces = clazz.getInterfaces();
-        for(int i=0;i<interfaces.length;i++)
-        {
-           set.add(interfaces[i].getSimpleName());
+        for (Class anInterface : interfaces) {
+            set.add(anInterface.getSimpleName());
         }
         return set;
 
@@ -43,8 +41,8 @@ public class InvestigateClass implements Investigator {
     public int getCountOfConstantFields() {
         int countOfConstantFields=0;
         Field[] allFields = clazz.getDeclaredFields();
-        for (int i = 0; i < allFields.length; i++) {
-            if (Modifier.isFinal(allFields[i].getModifiers())) {
+        for (Field field : allFields) {
+            if (Modifier.isFinal(field.getModifiers())) {
                 countOfConstantFields++;
             }
         }
@@ -54,8 +52,8 @@ public class InvestigateClass implements Investigator {
     {
         int countOfStaticMethods=0;
         Method[]  allMethods=clazz.getDeclaredMethods();
-        for (int i = 0; i < allMethods.length; i++) {
-            if (Modifier.isStatic(allMethods[i].getModifiers())) {
+        for (Method method : allMethods) {
+            if (Modifier.isStatic(method.getModifiers())) {
                 countOfStaticMethods++;
             }
         }
@@ -63,40 +61,37 @@ public class InvestigateClass implements Investigator {
     }
     @Override
     public boolean isExtending() {
+        boolean ans=true;
       if(clazz.getSuperclass().equals(Object.class)||(clazz.equals(Object.class)))
       {
-          return false;
+          ans= false;
       }
-
-        return true;
+        return ans;
     }
+
     @Override
-    public String getParentClassSimpleName() {
-        if (this.isExtending()) {
-            return clazz.getSuperclass().getSimpleName();
-        }
-        return null;
+  public String getParentClassSimpleName() {
+
+         if(clazz.equals(Object.class))
+         {
+             return null;
+         }
+        return clazz.getSuperclass().getSimpleName();
+
     }
     @Override
     public boolean isParentClassAbstract() {
-        if(!this.isExtending())
+       boolean result=false;
+        if(clazz.equals(Object.class))
         {
-            return false;
+            result=false;
         }
         else if(Modifier.isAbstract( clazz.getSuperclass().getModifiers()))
         {
-            return true;
+            result= true;
         }
-        return false;
+        return result;
     }
-
-
-    /**
-     * get all the names of all fields, including the ones coming from the inheritance chain
-     * all fields of any type should exists: private, public, protected, static etc.
-     *
-     * @return set of fields names
-     */
     @Override
     public Set<String> getNamesOfAllFieldsIncludingInheritanceChain() {
         Set<String> set=new HashSet<String>();
@@ -105,9 +100,8 @@ public class InvestigateClass implements Investigator {
         while (tmpClazz != null)
         {
             allFields=tmpClazz.getDeclaredFields();
-            for (int i=0;i<allFields.length;i++)
-            {
-                set.add(allFields[i].getName());
+            for (Field field : allFields) {
+                set.add(field.getName());
             }
            tmpClazz=tmpClazz.getSuperclass();
         }
@@ -116,16 +110,15 @@ public class InvestigateClass implements Investigator {
     @Override
     public int invokeMethodThatReturnsInt(String methodName, Object... args) {
         int result=0;
-        Method[]  allMethods=clazz.getDeclaredMethods();
-        for(int i=0;i<allMethods.length;i++)
-        {
-            if (allMethods[i].getName().equals(methodName))
-            {
+        Method[] allMethods=clazz.getDeclaredMethods();
+        for (Method method : allMethods) {
+            if (method.getName().equals(methodName)) {
                 try {
-                    result = (int) allMethods[i].invoke(ObjectanInstanceOfSomething, args);
+                    result = (int) method.invoke(ObjectanInstanceOfSomething, args);
                     break;
                 }
-                   catch(Exception e) {}
+                catch (Exception e)
+                {}
             }
         }
         return result;
@@ -135,12 +128,10 @@ public class InvestigateClass implements Investigator {
     {
         Constructor[] allConstructors =clazz.getDeclaredConstructors();
         Object newObject=null;
-        for(int i=0;i<allConstructors.length;i++)
-        {
-            if(allConstructors[i].getParameterCount()==numberOfArgs)
-            {
+        for (Constructor constructor : allConstructors) {
+            if (constructor.getParameterCount() == numberOfArgs) {
                 try {
-                    newObject=allConstructors[i].newInstance(args);
+                    newObject = constructor.newInstance(args);
                     break;
                 }
                 catch (Exception e) {}
@@ -174,9 +165,6 @@ public class InvestigateClass implements Investigator {
            }
            tmpClazz=tmpClazz.getSuperclass();
         }
-
         return strResult;
-
     }
-
 }
