@@ -2,14 +2,18 @@ package reflection.api;
 
 import java.io.Serializable;
 
- public class Rectangle extends Polygon implements Comparable, Serializable {
+ public class Rectangle extends Polygon  implements Serializable,Comparable{
 
+//
     protected int x;
+   //public static final double yc=0.0;
     public int y;
-    private final int SCALE = 2;
-   public int SCALE2 = 2;
-   protected final int SCALE23= 2;
-/*    public static void PRINT_SOMETHING() {
+/*    private  int SCALEj = 2;
+    public  final int SCALE2 = 2;
+    protected final int SCALE23= 2;
+    static int rt;
+    private long gd;*/
+    public static void PRINT_SOMETHING() {
         System.out.println("this is a static method");
     }
     public static void PRI3NT_SOMETHING() {
@@ -17,7 +21,7 @@ import java.io.Serializable;
     }
     protected static void Pw3RI3NT_SOMETHING() {
         System.out.println("this is a static method");
-    }*/
+    }
 
     protected Rectangle() {
         x = -1;
@@ -40,7 +44,6 @@ import java.io.Serializable;
         addPoint(0, y);
         addPoint(x, y);
     }
-
     public int calcArea() {
         return x * y;
     }
@@ -58,13 +61,13 @@ import java.io.Serializable;
 
         return this.calcArea() - ((Rectangle)o).calcArea();
     }
-    public int getP() {
+    public static int getP() {
         return 1;
     }
-    private int get7P() {
+    private static int get7P() {
         return 7;
     }
-    private int gewt7P() {
+    protected static int gewt7P() {
         return 75;
     }
 }

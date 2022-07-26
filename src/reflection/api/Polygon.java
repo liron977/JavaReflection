@@ -4,10 +4,12 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
-abstract public class Polygon {
+ public class Polygon implements Cloneable{
 
-  private Set<Point> points;
-    private final int SCALE = 2;
+   Set<Point> points;
+  /*  private final int SCALE = 2;
+     final int SCALE233 = 2;
+     static int yi=20;*/
     public Polygon() {
         points = new HashSet<>();
     }

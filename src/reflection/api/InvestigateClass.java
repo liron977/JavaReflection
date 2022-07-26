@@ -72,7 +72,7 @@ public class InvestigateClass implements Investigator {
     @Override
   public String getParentClassSimpleName() {
 
-         if(clazz.equals(Object.class))
+         if((clazz.equals(null))||(clazz.equals(Object.class))||(clazz.getSuperclass().equals(null)))
          {
              return null;
          }
@@ -129,14 +129,23 @@ public class InvestigateClass implements Investigator {
         Constructor[] allConstructors =clazz.getDeclaredConstructors();
         Object newObject=null;
         for (Constructor constructor : allConstructors) {
-            if (constructor.getParameterCount() == numberOfArgs) {
-                try {
-                    newObject = constructor.newInstance(args);
-                    break;
+            try {
+                if (constructor.getParameterCount() == numberOfArgs) {
+                    if (numberOfArgs == 0)
+                    {
+                        newObject = constructor.newInstance();
+                        break;
+
+                    }
+                    else
+                    {
+                        newObject = constructor.newInstance(args);
+                        break;
+                    }
                 }
+            }
                 catch (Exception e) {}
 
-            }
         }
         return newObject;
     }
@@ -148,7 +157,8 @@ public class InvestigateClass implements Investigator {
             method.setAccessible(true);
             resultOfInvocation=method.invoke(ObjectanInstanceOfSomething,args);
         }
-        catch (Exception e){}
+        catch (Exception e)
+        {}
 
         return resultOfInvocation;
     }

@@ -8,9 +8,10 @@ import java.util.Arrays;
  * interface) - Cloneable
  */
 public class Student implements Cloneable{
-    private String name;
-    private int id;
-    private int[] grades;
+    protected String name;
+    private static int id;
+    static  int xc;
+    public int[] grades;
 
     public Student(String name, int id, int[] grades) {
         this.name = name;
